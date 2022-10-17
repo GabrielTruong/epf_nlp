@@ -10,7 +10,11 @@
 
 ## Objectives
 
-We want to perform sentiment analysis using Logistic Regression. In order to do that, we will follow the following steps:
+We want to perform sentiment analysis using Logistic Regression as the following figure shows:
+
+Figure 1 - Logistic Regression for Sentiment Analysis
+
+In order to do that, we will follow the following steps:
 
 1. Extracting Features from text for Logistic Regression
 2. Implementing Logistic Regression
@@ -105,36 +109,162 @@ def extract_features(tweet, freqs):
     for word in word_l:
         
         # increment the word count for the positive label 1
-        x[0,1] += freqs.get((word,1),0) ## ADD YOUR CODE HERE
+        x[0,1] += freqs.get((word,1),0) 
         
         # increment the word count for the negative label 0
-        x[0,2] += freqs.get((word,0),0) ## ADD YOUR CODE HERE
+        x[0,2] += freqs.get((word,0),0) 
         
     assert(x.shape == (1, 3))
     return x
 ```
 
+Let’s try to pass an element of our train data. 
+
+```python
+tmp1= extract_features(train_x[0], freqs)
+print(tmp1)
+#-> [[1.00e+00 3.02e+03 6.10e+01]]
+```
+
+We get in return a vector of three elements. The first element (1.00e+00) exists for computing the bias. The `extract_features` returns a vector that has the same dimension of the input data.
+
 ---
 
 ## 2. Implement Logistic Regression
 
-We need Logistic Regression because it will help us to classify sentiments in texts.
+We need Logistic Regression because it will help us to classify sentiments in texts. The framework to develop a Logistic Regression works as below:
 
-To keep this recap short, we won’t detail how to implement Logistic Regression since we cover it many times.
 
-Logistic Regression uses the sigmoid function. To get the best fit for the sigmoid function, we need to update the weights by using the cost function and the gradient descent algorithm. 
 
-If you want to have details on how it is implemented, feel free to play with the jupyter notebook. 
+Figure 2 - Logistic Regression flowchart
+
+### Sigmoid Function
+
+First we need to code the sigmoid function:
+
+ $h(z) = \frac{1}{1+exp(-z)}$ .
+
+It returns a probability between 0 and 1. 
+
+```python
+def sigmoid(z): 
+    '''
+    Input:
+        z: iscalar or numpy array
+    Output:
+        h: the sigmoid of z
+    '''
+
+    h = 1/(1+np.exp(-z))
+
+    return h
+```
+
+The z variable takes the following form: $z = w_0x_0 + w_1x_1+...+w_nx_n$. We call the $\theta_0,\theta_1,...,\theta_n$ the weights of the Logistic Regression and our goal is to find the best parameters that “fits” our data the best. 
+
+### Cost Function
+
+The cost function used for logistic regression is the average of the log loss across all training and follows the equation:
+
+
+
+- $m$  is the number of training examples
+- $y^i$ is the actual label of the i-th training example.
+- $h(z(\theta))^i$ is the model's prediction for the i-th training example.
+
+As the figure 2 details, the cost function will help us to update our parameters through gradient descent.
+
+### Gradient Descent
+
+To update your weight vector $\theta$, you will apply gradient descent to iteratively improve your model's predictions.The gradient of the cost function J with respect to one of the weights $\theta_j$ is:
+
+
+
+- 'i' is the index across all 'm' training examples.
+- 'j' is the index of the weight θj, so xj is the feature associated with weight θj
+- To update the weight $\theta_j$, we adjust it by subtracting a fraction of the gradient determined by $\alpha$:
+
+$$
+\theta_j = \theta_j - \alpha * \nabla J(\theta)
+$$
+
+- The learning rate $\alpha$  is a value that we choose to control how big a single update will be.
+
+```python
+def gradientDescent(x, y, theta, alpha, num_iters):
+    '''
+    Input:
+        x: matrix of features which is (m,n+1)
+        y: corresponding labels of the input matrix x, dimensions (m,1)
+        theta: weight vector of dimension (n+1,1)
+        alpha: learning rate
+        num_iters: number of iterations for which you want to train your model
+    Output:
+        J: the final cost
+        theta: your final weight vector
+    Hint: you might want to print the cost to make sure that it is going down.
+    '''
+# get 'm', the number of rows in matrix 
+xm, _= x.shape
+
+for i in range(num_iters):
+
+# get z, the dot product of x and theta
+z= np.dot(x,theta)
+
+# get the sigmoid of z
+h= sigmoid(z)
+
+# calculate the cost function
+J=-(1/m)*(np.dot(y.T,np.log(h))+np.dot((1-y).T,np.log(1-h))) 
+# update the weights theta
+theta= theta- (alpha/m)*np.dot(x.T,(h-y))
+
+    J= float(J)
+return J, theta
+```
+
+The `gradientDescent`function takes as input: $x, y, \theta, \alpha, N$ with N being the number of iterations and returns the cost and the weights after training. Let’s try to train our model with our data ie. X,Y. 
+
+```python
+J, theta= gradientDescent(X, Y, np.zeros((3, 1)), 1e-9, 1500)
+print(f'Cost after training : {J:.8f}.')
+print(f'Vector of weights : {[round(t, 8)for tin np.squeeze(theta)]}')
+#-> Cost after training : 0.24215474.
+#-> Vector of weights : [7e-08, 0.00052391, -0.00055517]
+```
+
+The vector of weights will be use in the final sigmoid function to predict the probability of a tweet being negative or positive. More later.
 
 ---
 
-## 3. Test the Logistic Regression model
+## 3. Test the Logistic Regression model and predict !
 
 After we trained the Logistic Regression model, we want to test on new inputs to predict wheter the tweet is positive or negative. We implemented the `predict_tweet` function. What this function does is simple: 
 
 - Given a tweet, process it, then extract the features.
 - Apply the model's learned weights on the features to get the logits.
 - Apply the sigmoid to the logits to get the prediction (a value between 0 and 1).
+
+```python
+def predict_tweet(tweet, freqs, theta):
+    '''
+    Input:
+        tweet: a string
+        freqs: a dictionary corresponding to the frequencies of each tuple (word, label)
+        theta: (3,1) vector of weights
+    Output:
+        y_pred: the probability of a tweet being positive or negative
+    '''
+
+# extract the features of the tweet and store it into x
+x= extract_features(tweet,freqs)
+
+# make the prediction using x and theta
+y_pred= sigmoid(np.dot(x,theta))
+
+return y_pred
+```
 
  We then test this function with a random list of sentences: 
 
@@ -184,18 +314,21 @@ def test_logistic_regression(test_x, test_y, freqs, theta):
 
 # the list for storing predictionsy_hat= []
 
-for tweetin test_x:
+for tweet in test_x:
 # get the label prediction for the tweety_pred= predict_tweet(tweet, freqs, theta)## ADD YOUR CODE HERE
 
 if y_pred> 0.5:
-            y_hat.append(1.0)# append 1.0 to the list## ADD YOUR CODE HEREelse:
-# append 0 to the list## ADD YOUR CODE HEREy_hat.append(0.0)
+	  y_hat.append(1.0)# append 1.0 to the list## 
+else:
+# append 0 to the list
+		y_hat.append(0.0)
 
-# With the above implementation, y_hat is a list, but test_y is (m,1) array# convert both to one-dimensional arrays in order to compare them using the '==' operator
+# With the above implementation, y_hat is a list, but test_y is (m,1) array
+# convert both to one-dimensional arrays in order to compare them using the '==' operator
 
     y_hat= np.array(y_hat).reshape(len(y_hat),)
     test_y= test_y.reshape(len(test_y),)
-    accuracy= np.sum(y_hat==test_y)/y_hat.shape[0]## ADD YOUR CODE HERE
+    accuracy= np.sum(y_hat==test_y)/y_hat.shape[0]
 
 return accuracy
 ```
