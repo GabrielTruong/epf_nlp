@@ -1,19 +1,10 @@
-# NLP - TP1
-
-Class: NLP
-Created: October 17, 2022 9:10 AM
-Materials: NLP%20-%20TP1%2084516c96b47d4d448e4ccf8b02a76328/1_Course_Regression.pdf
-Person: Anonymous
-Reviewed: No
-Type: Practical Work
-
-# Recap - Practical Work #1
+# Twitter Sentiment Analysis using Logistic Regression
 
 ---
 
 ### Link to my jupyter notebook
 
-[epf_nlp/Ex_1-blank.ipynb at main · GabrielTruong/epf_nlp](https://github.com/GabrielTruong/epf_nlp/blob/main/Ex1/Ex_1-blank.ipynb)
+[Repository](https://github.com/GabrielTruong/epf_nlp/blob/main/Ex1/Ex_1-blank.ipynb)
 
 ---
 
