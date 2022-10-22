@@ -12,7 +12,10 @@
 
 We want to perform sentiment analysis using Logistic Regression as the following figure shows:
 
+![Figure 1 - Logistic Regression for Sentiment Analysis](../assets/lr_framework.png)
 Figure 1 - Logistic Regression for Sentiment Analysis
+
+
 
 In order to do that, we will follow the following steps:
 
@@ -134,6 +137,7 @@ We get in return a vector of three elements. The first element (1.00e+00) exists
 
 We need Logistic Regression because it will help us to classify sentiments in texts. The framework to develop a Logistic Regression works as below:
 
+![Figure 2 - Logistic Regression](../assets/lr_gd.png)
 
 
 Figure 2 - Logistic Regression flowchart
@@ -166,7 +170,7 @@ The z variable takes the following form: $z = w_0x_0 + w_1x_1+...+w_nx_n$. We ca
 
 The cost function used for logistic regression is the average of the log loss across all training and follows the equation:
 
-
+![Cost function](../assets/costFunction.png)
 
 - $m$  is the number of training examples
 - $y^i$ is the actual label of the i-th training example.
