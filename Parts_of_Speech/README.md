@@ -1,7 +1,7 @@
 # NLP - Parts-of-Speech Tagging
 
 
-[epf_nlp/machineTranslation at main · GabrielTruong/epf_nlp](https://github.com/GabrielTruong/epf_nlp/tree/main/machineTranslation)
+[Link to notebook](https://github.com/GabrielTruong/epf_nlp/blob/main/Parts_of_Speech/part_of_speech.ipynb)
 
 ## Objectives
 
@@ -37,13 +37,13 @@ Before predicting tags, we need to compute few dictionaries that will help us af
 **Transition counts**
 
 This dictionary computes the number of times each tag happened next to another tag. In a more mathematical notation, we need to compute:
-$$P(t_i |t_{i-1}) \tag{1}$$, the probability of tag at position $$i$$ given the tag at position $$i-1$$.
+$P(t_i |t_{i-1}) \tag{1}$  the probability of tag at position $i$ given the tag at position $i-1$.
 The dic has then `(prev_tag,tag)` as keys and the number of times the tags apperead as values.
 
 **Emission counts**
 
 This dictionary computes the probability of a word given its tag: 
-$$P(w_i|t_i)\tag{2}$$. 
+$P(w_i|t_i)\tag{2}$. 
 The keys of the dictionary are `(tag,word)` and the values are the number of times that pair appeared in the training set.
 
 **Tag counts**
@@ -207,7 +207,7 @@ In our case, the states represents the parts-of-speech. A Markov Model utilizes 
 
 Let's implement `A` the transition probabilities matrix and `B` the emission probabilities matrix. To compute these matrices, we will perform smoothing done as follows:
 
-$$ P(t_i | t_{i-1}) = \frac{C(t_{i-1}, t_{i}) + \alpha }{C(t_{i-1}) +\alpha * N}\tag{3}$$
+$ P(t_i | t_{i-1}) = \frac{C(t_{i-1}, t_{i}) + \alpha }{C(t_{i-1}) +\alpha * N}\tag{3}$
 
 - $N$ is the total number of tags
 - $C(t_{i-1}, t_{i})$ is the count of the tuple (previous POS, current POS) in `transition_counts` dictionary.
@@ -270,7 +270,7 @@ def create_transition_matrix(alpha, tag_counts, transition_counts):
 
 For `B` the emission matrix, we also use smoothing defined below:
 
-$$P(w_i | t_i) = \frac{C(t_i, word_i)+ \alpha}{C(t_{i}) +\alpha * N}\tag{4}$$
+$P(w_i | t_i) = \frac{C(t_i, word_i)+ \alpha}{C(t_{i}) +\alpha * N}\tag{4}$
 
 - $C(t_i, word_i)$ is the number of times $word_i$ was associated with $tag_i$ in the training data (stored in `emission_counts` dictionary).
 - $C(t_i)$ is the number of times $tag_i$ was in the training data (stored in `tag_counts` dictionary).

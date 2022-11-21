@@ -423,7 +423,7 @@ def make_hash_table(vecs, planes):
     # store the vector's index 'i' (each document is given a unique integer 0,1,2...)
         # the key is the h, and the 'i' is appended to the list at key h
         id_table[h].append(i)
-    return hash_table, id_table
+    r-eturn hash_table, id_table
 ```
 
 ### Using KNN & LSH
